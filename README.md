@@ -32,11 +32,45 @@
 # 소스경로
 - https://github.com/IN-SU-JEON/20221122-edu-is.git
 
-# 체크포인트
-
-- Saga (Pub / Sub)
+# 설계
 ![image](https://user-images.githubusercontent.com/117341052/203219302-4cefb7dc-490f-4dd4-b66b-65dfafd66730.png)
-  - CQRS
+
+# 체크포인트
+- Saga (Pub / Sub)
+```
+@Service
+@Transactional
+public class PolicyHandler {
+
+    @Autowired
+    OrderRepository orderRepository;
+
+    @StreamListener(KafkaProcessor.INPUT)
+    public void whatever(@Payload String eventString) {}
+
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='CookingStarted'"
+    )
+    public void wheneverCookingStarted_OrderSttausUpdate(
+        @Payload CookingStarted cookingStarted
+    ) {
+        CookingStarted event = cookingStarted;
+        System.out.println(
+            "\n\n##### listener OrderSttausUpdate : " + cookingStarted + "\n\n"
+        );
+
+        // Comments //
+        //상태변경
+
+        // Sample Logic //
+        Order.orderSttausUpdate(event);
+    }
+}
+
+
+```
+- CQRS
 ```
 package eduis.infra;
 

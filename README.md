@@ -30,6 +30,7 @@
     1. 배달상태가 바뀔때마다 카톡 등으로 알림을 줄 수 있어야 한다  Event driven
 
 # 소스경로
+- https://github.com/IN-SU-JEON/20221122-edu-is.git
 
 # 체크포인트
 
@@ -91,7 +92,7 @@ public class OrderDetailListViewHandler {
 
          });
         */
-        repository().findById(paid.get???()).ifPresent(food->{
+        repository().findById(paid.getStatus()).ifPresent(food->{
             
             food.setStatus("status:결제됨") // do something
             repository().save(food);

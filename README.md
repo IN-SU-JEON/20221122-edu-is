@@ -56,14 +56,8 @@ public class PolicyHandler {
         @Payload CookingStarted cookingStarted
     ) {
         CookingStarted event = cookingStarted;
-        System.out.println(
-            "\n\n##### listener OrderSttausUpdate : " + cookingStarted + "\n\n"
-        );
+        
 
-        // Comments //
-        //상태변경
-
-        // Sample Logic //
         Order.orderSttausUpdate(event);
     }
 }
@@ -73,16 +67,6 @@ public class PolicyHandler {
 - CQRS
 ```
 package eduis.infra;
-
-import eduis.config.kafka.KafkaProcessor;
-import eduis.domain.*;
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.stream.annotation.StreamListener;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.stereotype.Service;
 
 @Service
 public class OrderDetailListViewHandler {
@@ -110,23 +94,6 @@ public class OrderDetailListViewHandler {
   - Compensation / Correlation
 ```
     public static void orderListAdd(Paid paid) {
-        /** Example 1:  new item 
-        Food food = new Food();
-        repository().save(food);
-
-        */
-
-        /** Example 2:  finding and process
-        
-        repository().findById(paid.get???()).ifPresent(food->{
-            
-            food // do something
-            repository().save(food);
-
-
-         });
-        */
-        
         Food food = new Food();
         food.setOrderId(paid.getOrderId);
         repository().save(food);
@@ -136,24 +103,14 @@ public class OrderDetailListViewHandler {
             
             food.setStatus("status:결제됨") // do something
             repository().save(food);
-
-
          });
     }
 ```
   - Request / Response
 ```
-# (app) PaymentinformationService.java
+# PaymentinformationService.java
 
 package eduis.external;
-
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-
-import java.util.Date;
 
 @FeignClient(name = "payment", url = "http://localhost:8082")
 public interface PaymentinformationService {
@@ -163,30 +120,21 @@ public interface PaymentinformationService {
 
 ```
 ```
-# Order.java (Entity)
+# Order.java 
 
     @PostPersist
     public void onPostPersist(){
-
-        //Following code causes dependency to external APIs
-        // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
-
 
         eduis.external.Paymentinformation paymentinformation = new eduis.external.Paymentinformation();
         // mappings goes here
         OrderApplication.applicationContext.getBean(eduis.external.PaymentinformationService.class)
             .payment(paymentinformation);
 
-
         Ordered ordered = new Ordered(this);
         ordered.publishAfterCommit();
 
-
-
         OrderCanceled orderCanceled = new OrderCanceled(this);
         orderCanceled.publishAfterCommit();
-
-
 
         Refunded refunded = new Refunded(this);
         refunded.publishAfterCommit();

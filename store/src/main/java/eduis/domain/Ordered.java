@@ -7,7 +7,7 @@ import java.util.*;
 @Data
 public class Ordered extends AbstractEvent {
 
-    private Long orderId;
+    private String orderId;
     private String foodId;
     private String customerId;
     private String address;

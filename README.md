@@ -92,6 +92,12 @@ public class OrderDetailListViewHandler {
 
          });
         */
+        
+        Food food = new Food();
+        food.setOrderId(paid.getOrderId);
+        repository().save(food);
+        
+        
         repository().findById(paid.getStatus()).ifPresent(food->{
             
             food.setStatus("status:결제됨") // do something
